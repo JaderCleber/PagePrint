@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact name="PagePrint:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/PagePrint_jar</output-path>
+    <root id="root">
+      <element id="archive" name="PagePrint.jar">
+        <element id="module-output" name="PagePrint" />
+      </element>
+      <element id="library" level="project" name="jasperreports" />
+    </root>
+  </artifact>
+</component>

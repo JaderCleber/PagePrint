@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+   </rowConstraints>
+   <children>
+      <AnchorPane prefHeight="398.0" prefWidth="846.0">
+         <children>
+            <VBox layoutX="20.0" layoutY="14.0" prefHeight="307.0" prefWidth="500.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#actAdicionar" prefHeight="34.0" prefWidth="113.0" text="Adicionar Imagem" />
+                  <HBox prefHeight="334.0" prefWidth="434.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <TableView fx:id="lvImagens" prefHeight="322.0" prefWidth="243.0" HBox.hgrow="ALWAYS">
+                           <columns>
+                              <TableColumn fx:id="tcId" prefWidth="75.0" visible="false" />
+                              <TableColumn fx:id="tcImagem" prefWidth="275.344500541687" text="Caminho da Imagem" />
+                              <TableColumn fx:id="tcDescricao" prefWidth="338.2198181152344" text="Descrição" />
+                           </columns>
+                        </TableView>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <TextArea fx:id="taDescricao" layoutY="30.0" prefHeight="108.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="20.0" />
+                              <Label text="Descrição" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <Button mnemonicParsing="false" onAction="#actSalvar" text="Salvar" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="140.0" />
+                              <Button layoutX="80.0" layoutY="140.0" mnemonicParsing="false" onAction="#actRemover" text="Remover Imagem" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="140.0" />
+                              <Button layoutX="55.0" layoutY="256.0" mnemonicParsing="false" onAction="#actImprimir" prefHeight="45.0" prefWidth="91.0" text="Imprimir" />
+                           </children>
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                        </AnchorPane>
+                     </children>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
+   </children>
+</GridPane>
