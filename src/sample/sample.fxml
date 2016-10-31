@@ -17,40 +17,147 @@
       <RowConstraints />
    </rowConstraints>
    <children>
-      <AnchorPane prefHeight="398.0" prefWidth="846.0">
-         <children>
-            <VBox layoutX="20.0" layoutY="14.0" prefHeight="307.0" prefWidth="500.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-               <children>
-                  <Button mnemonicParsing="false" onAction="#actAdicionar" prefHeight="34.0" prefWidth="113.0" text="Adicionar Imagem" />
-                  <HBox prefHeight="334.0" prefWidth="434.0" VBox.vgrow="ALWAYS">
+      <AnchorPane prefHeight="398.0" prefWidth="846.0" />
+      <TabPane prefHeight="435.0" prefWidth="846.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Produção       ">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView fx:id="lvImagens" prefHeight="322.0" prefWidth="243.0" HBox.hgrow="ALWAYS">
-                           <columns>
-                              <TableColumn fx:id="tcId" prefWidth="75.0" visible="false" />
-                              <TableColumn fx:id="tcImagem" prefWidth="275.344500541687" text="Caminho da Imagem" />
-                              <TableColumn fx:id="tcDescricao" prefWidth="338.2198181152344" text="Descrição" />
-                           </columns>
-                        </TableView>
-                        <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                        <VBox prefHeight="307.0" prefWidth="500.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                            <children>
-                              <TextArea fx:id="taDescricao" layoutY="30.0" prefHeight="108.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="20.0" />
-                              <Label text="Descrição" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                              <Button mnemonicParsing="false" onAction="#actSalvar" text="Salvar" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="140.0" />
-                              <Button layoutX="80.0" layoutY="140.0" mnemonicParsing="false" onAction="#actRemover" text="Remover Imagem" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="140.0" />
-                              <Button layoutX="55.0" layoutY="256.0" mnemonicParsing="false" onAction="#actImprimir" prefHeight="45.0" prefWidth="91.0" text="Imprimir" />
+                              <HBox prefHeight="334.0" prefWidth="434.0" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <TableView fx:id="tbImagens" prefHeight="322.0" prefWidth="243.0" HBox.hgrow="ALWAYS">
+                                       <columns>
+                                          <TableColumn fx:id="tcId" prefWidth="75.0" visible="false" />
+                                          <TableColumn fx:id="tcImagem" prefWidth="275.344500541687" text="Caminho da Imagem" />
+                                          <TableColumn fx:id="tcDescricao" prefWidth="338.2198181152344" text="Descrição" />
+                                       </columns>
+                                    </TableView>
+                                    <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                       <children>
+                                          <TextArea fx:id="taDescricao" layoutY="30.0" prefHeight="108.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="20.0" />
+                                          <Label text="Descrição" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                          <Button mnemonicParsing="false" onAction="#actSalvarDescricao" prefHeight="33.0" prefWidth="200.0" text="Salvar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="140.0" />
+                                          <Label layoutY="230.0" text="Nome ao Catálogo" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                                          <TextField fx:id="inNomeCataloog" layoutX="2.0" layoutY="247.0" prefHeight="30.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets left="10.0" />
+                                       </HBox.margin>
+                                    </AnchorPane>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" prefWidth="200.0">
+                                 <children>
+                                    <Button mnemonicParsing="false" onAction="#actAdicionar" prefHeight="34.0" prefWidth="113.0" text="Adicionar Imagem" />
+                                    <Button alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#actRemover" prefHeight="34.0" prefWidth="110.0" text="Remover Imagem">
+                                       <HBox.margin>
+                                          <Insets left="30.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button mnemonicParsing="false" onAction="#actImprimir" prefHeight="34.0" prefWidth="134.0" text="Imprimir Catálogo">
+                                       <HBox.margin>
+                                          <Insets left="30.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <Button mnemonicParsing="false" onAction="#actSalvar" prefHeight="38.0" prefWidth="139.0" text="Salvar Catalago">
+                                             <HBox.margin>
+                                                <Insets />
+                                             </HBox.margin>
+                                          </Button>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" left="20.0" top="10.0" />
+                                 </VBox.margin>
+                              </HBox>
                            </children>
-                           <HBox.margin>
-                              <Insets left="10.0" />
-                           </HBox.margin>
-                        </AnchorPane>
+                        </VBox>
                      </children>
-                     <VBox.margin>
-                        <Insets top="10.0" />
-                     </VBox.margin>
-                  </HBox>
-               </children>
-            </VBox>
-         </children>
-      </AnchorPane>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Busca             ">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="307.0" prefWidth="500.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                           <children>
+                              <HBox prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                    <VBox prefHeight="42.0" prefWidth="190.0">
+                                       <children>
+                                          <Label prefHeight="17.0" prefWidth="151.0" text="Nome do Catálogo" />
+                                          <TextField fx:id="inPesquisaNome" />
+                                       </children>
+                                    </VBox>
+                                    <VBox prefHeight="42.0" prefWidth="125.0">
+                                       <children>
+                                          <Label text="Data Inicial" />
+                                          <DatePicker fx:id="inDataInicial" prefHeight="25.0" prefWidth="120.0" />
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets left="10.0" />
+                                       </HBox.margin>
+                                    </VBox>
+                                    <VBox prefHeight="42.0" prefWidth="119.0">
+                                       <children>
+                                          <Label text="Data Final" />
+                                          <DatePicker fx:id="inDataFinal" prefWidth="120.0" />
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets left="10.0" />
+                                       </HBox.margin>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="334.0" prefWidth="434.0" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <TableView fx:id="tbPesquisa" prefHeight="322.0" prefWidth="243.0" HBox.hgrow="ALWAYS">
+                                       <columns>
+                                          <TableColumn fx:id="tcId1" prefWidth="75.0" visible="false" />
+                                          <TableColumn fx:id="tcImagem1" prefWidth="181.91965806484222" text="Nome" />
+                                          <TableColumn fx:id="tcDescricao1" prefWidth="433.08033752441406" text="Descrição" />
+                                       </columns>
+                                    </TableView>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                    <Button mnemonicParsing="false" onAction="#actEditar" prefHeight="34.0" prefWidth="113.0" text="Editar" />
+                                    <Button alignment="CENTER" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#actExcluir" prefHeight="34.0" prefWidth="110.0" text="Excluir">
+                                       <HBox.margin>
+                                          <Insets left="30.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button mnemonicParsing="false" onAction="#actReimprimir" prefHeight="34.0" prefWidth="91.0" text="Re-Imprimir">
+                                       <HBox.margin>
+                                          <Insets left="30.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets left="20.0" />
+                                 </VBox.margin>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
    </children>
 </GridPane>

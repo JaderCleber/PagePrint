@@ -8,9 +8,9 @@ import java.io.InputStream;
  */
 public class Imagem {
     private File imagem;
-    private String id;
-    private String caminho;
-    private String descricao;
+    private String id = "";
+    private String caminho = "";
+    private String descricao = "";
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
