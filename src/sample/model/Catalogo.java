@@ -17,26 +17,45 @@
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package sample;
+package sample.model;
 
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import java.io.File;
 
-public class Main extends Application {
+public class Catalogo {
+    private String id = "";
+    private String nome = "";
+    private String cadastro = "";
+    private String detalhes = "";
 
-    @Override
-    public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setTitle("Printer");
-        primaryStage.setScene(new Scene(root, 800, 450));
-        primaryStage.show();
+    public String getDetalhes() {
+        return detalhes;
     }
 
+    public void setDetalhes(String detalhes) {
+        this.detalhes = detalhes;
+    }
 
-    public static void main(String[] args) {
-        launch(args);
+    public void setCadastro(String cadastro) {
+        this.cadastro = cadastro;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getCadastro() {
+        return cadastro;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getNome() {
+        return nome;
     }
 }

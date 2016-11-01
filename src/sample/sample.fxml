@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -14,7 +15,7 @@
    </rowConstraints>
    <children>
       <AnchorPane prefHeight="398.0" prefWidth="846.0" />
-      <TabPane prefHeight="435.0" prefWidth="846.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane prefHeight="435.0" prefWidth="846.0" tabClosingPolicy="UNAVAILABLE" fx:id="tab">
         <tabs>
           <Tab text="Produção       ">
             <content>
@@ -40,6 +41,11 @@
                                           <TextField fx:id="inNomeCatalogo" layoutY="216.0" prefHeight="30.0" prefWidth="200.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
                                           <Label layoutY="250.0" text="Detalhes do Catálogo" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" />
                                           <TextArea fx:id="taDetalhes" layoutY="267.0" prefHeight="51.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
+                                          <Label fx:id="lbCodigo" layoutX="6.0" layoutY="163.0" textFill="#2c45bf" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                             <font>
+                                                <Font size="18.0" />
+                                             </font>
+                                          </Label>
                                        </children>
                                        <HBox.margin>
                                           <Insets left="10.0" />
@@ -89,7 +95,7 @@
                      <children>
                         <VBox prefHeight="307.0" prefWidth="500.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                            <children>
-                              <HBox prefHeight="100.0" prefWidth="200.0">
+                              <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                                  <children>
                                     <VBox prefHeight="42.0" prefWidth="190.0">
                                        <children>
@@ -115,15 +121,21 @@
                                           <Insets left="10.0" />
                                        </HBox.margin>
                                     </VBox>
+                                    <Button mnemonicParsing="false" onAction="#actBuscar" prefHeight="34.0" prefWidth="113.0" text="Buscar">
+                                       <HBox.margin>
+                                          <Insets left="30.0" />
+                                       </HBox.margin>
+                                    </Button>
                                  </children>
                               </HBox>
                               <HBox prefHeight="334.0" prefWidth="434.0" VBox.vgrow="ALWAYS">
                                  <children>
                                     <TableView fx:id="tbPesquisa" prefHeight="322.0" prefWidth="243.0" HBox.hgrow="ALWAYS">
                                        <columns>
-                                          <TableColumn fx:id="tcId1" prefWidth="75.0" visible="false" />
-                                          <TableColumn fx:id="tcImagem1" prefWidth="181.91965806484222" text="Nome" />
-                                          <TableColumn fx:id="tcDescricao1" prefWidth="433.08033752441406" text="Descrição" />
+                                          <TableColumn fx:id="tcIdCatalogo" prefWidth="50.0" text="Código"/>
+                                          <TableColumn fx:id="tcNome" prefWidth="200" text="Nome" />
+                                          <TableColumn fx:id="tcData" prefWidth="150" text="Data" />
+                                          <TableColumn fx:id="tcDetalhes" prefWidth="400" text="Detalhes" />
                                        </columns>
                                     </TableView>
                                  </children>
@@ -134,7 +146,7 @@
                               <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                                  <children>
                                     <Button mnemonicParsing="false" onAction="#actEditar" prefHeight="34.0" prefWidth="113.0" text="Editar" />
-                                    <Button alignment="CENTER" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#actExcluir" prefHeight="34.0" prefWidth="110.0" text="Excluir">
+                                    <Button mnemonicParsing="false" onAction="#actExcluir" prefHeight="34.0" prefWidth="110.0" text="Excluir">
                                        <HBox.margin>
                                           <Insets left="30.0" />
                                        </HBox.margin>

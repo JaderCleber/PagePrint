@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 /**
  * Created by JaderCleber on 30/10/2016.
@@ -87,7 +88,7 @@ public class Conexao {
     public boolean executar(String sql) {
         Statement stmt = null;
         try {
-            Class.forName("org.sqlite.JDBC");
+//            Class.forName("org.sqlite.JDBC");
             con.setAutoCommit(false);
 
             stmt = con.createStatement();
@@ -102,23 +103,6 @@ public class Conexao {
         }
     }
 
-    public ResultSet consultar(String sql, Statement stmt) {
-        try {
-            Class.forName("org.sqlite.JDBC");
-            con.setAutoCommit(false);
-
-            stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-            stmt.close();
-            con.close();
-            return rs;
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-            return null;
-        }
-    }
-
     public Connection getCon() {
         return con;
     }
@@ -130,7 +114,7 @@ public class Conexao {
     public int novoCatalogo(String sql, String dataCadastro) {
         Statement stmt = null;
         try {
-            Class.forName("org.sqlite.JDBC");
+//            Class.forName("org.sqlite.JDBC");
             con.setAutoCommit(false);
             stmt = con.createStatement();
             stmt.executeUpdate(sql);
