@@ -1,3 +1,22 @@
+/**
+ * Copyright 2016 Jader Cleber
+ *
+ * This file is part of PagePrint.
+ *
+ * PagePrint is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PagePrint is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package sample.controller;
 
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -9,9 +28,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 
-/**
- * Created by JaderCleber on 22/10/2016.
- */
 public class JasperUtil {
     public static void exportPdfOnBrowser(Collection lista, Map parameters, InputStream localJasper, String nomeRelatorio) {
         // Bytes que serao exportados

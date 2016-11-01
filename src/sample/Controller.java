@@ -1,3 +1,21 @@
+/**
+ * Copyright 2016 Jader Cleber
+ *
+ * This file is part of PagePrint.
+ *
+ * PagePrint is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PagePrint is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package sample;
 
 import com.google.gson.Gson;
@@ -22,16 +40,15 @@ import sample.persistence.Conexao;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EmptyStackException;
-import java.util.List;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class Controller {
     @FXML
     private TableView tbImagens;
     @FXML
-    private TextArea taDescricao;
+    private TextArea taDescricao, taDetalhes;
     @FXML
     private TableColumn tcId, tcImagem, tcDescricao;
     @FXML
@@ -45,7 +62,7 @@ public class Controller {
     private String clicado = "";
     private FileChooser fileChooser = new FileChooser();
     private File ultimoArquivo = null;
-    private int idPagina = 0;
+    private int idCatalogo = 0;
 
     @FXML
     void initialize() {
@@ -114,6 +131,7 @@ public class Controller {
         if (files.size() > 0) {
             try {
                 for (File fileImg : files) {
+                    ultimoArquivo = new File(fileImg.getParent());
                     FileInputStream stream = new FileInputStream(fileImg.getAbsolutePath());
                     String caminho = fileImg.getAbsolutePath();
                     FileOutputStream output = new FileOutputStream("imagens/" + id + ".jpg");
@@ -142,7 +160,6 @@ public class Controller {
                     imagemList.add(imagem);
                     tabelaImagens.add(imagem);
                     atualizarBanco(imagem, "inserir");
-                    ultimoArquivo = new File(fileImg.getParent());
                 }
                 carregarTabela();
                 tbImagens.getSelectionModel().selectLast();
@@ -164,10 +181,10 @@ public class Controller {
     private void atualizarBanco(Imagem imagem, String acao) {
         try {
             Conexao con = new Conexao();
-            if (con.getC() == null)
+            if (con.getCon() == null)
                 throw new EmptyStackException();
 
-//            boolean limpeza = con.executar("DELETE FROM ITEM WHERE IPAGINA = " + idPagina);
+//            boolean limpeza = con.executar("DELETE FROM ITEM WHERE ICATALOGO = " + idCatalogo);
 //            if (!limpeza)
 //                throw new EmptyStackException();
             String sql = "";
@@ -176,7 +193,7 @@ public class Controller {
                     FileInputStream imageInFile = new FileInputStream(imagem.getImagem());
                     byte[] imageData = new byte[(int) imagem.getImagem().length()];
                     imageInFile.read(imageData);
-                    sql = "INSERT INTO ITEM (TIMAGEM, TCAMINHO, TDESCRICAO,IORDEM, IPAGINA " +
+                    sql = "INSERT INTO ITEM (TIMAGEM, TCAMINHO, TDESCRICAO,IORDEM, ICATALOGO) " +
                             " VALUES(\"";
                     sql += Base64.encodeBytes(imageData);
                     sql += "\",\"";
@@ -186,19 +203,21 @@ public class Controller {
                     sql += "\",";
                     sql += imagem.getId();
                     sql += ",";
-                    sql += idPagina;
+                    if(idCatalogo == 0)
+                        criarCatalogo();
+                    sql += idCatalogo;
                     sql += ");";
                     con.executar(sql);
                     break;
                 case "deletar":
                     sql = "DELETE FROM ITEM WHERE IORDEM = "+ imagem.getId();
-                    sql += " AND IPAGINA = " + idPagina;
+                    sql += " AND ICATALOGO = " + idCatalogo;
                     con.executar(sql);
                     break;
                 default:
                     sql = "UPDATE ITEM SET TDESCRICAO = \"" + imagem.getDescricao() + "\"";
                     sql += " WHERE IORDEM = " + imagem.getId();
-                    sql += " AND IPAGINA = " + idPagina;
+                    sql += " AND ICATALOGO = " + idCatalogo;
                     con.executar(sql);
                     break;
             }
@@ -210,19 +229,42 @@ public class Controller {
         }
     }
 
+    private void criarCatalogo() {
+        try {
+            Conexao con = new Conexao();
+            if (con.getCon() == null)
+                throw new EmptyStackException();
+
+//            boolean limpeza = con.executar("DELETE FROM ITEM WHERE ICATALOGO = " + idCatalogo);
+//            if (!limpeza)
+//                throw new EmptyStackException();
+            SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+            String sql = "";
+            String dataCadastro = format.format(new Date());
+            sql = "INSERT INTO CATALOGO (ID, TNOME, TCADASTRO, TDETALHES) VALUES (NULL, '"
+                    + (inNomeCatalogo.getText().toString().equals("")?"":inNomeCatalogo.getText())+"', '"
+                    + dataCadastro + "', '')";
+            idCatalogo = con.novoCatalogo(sql, dataCadastro);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public String toJSON() {
         ArrayList<ImagemJson> arrayJsons = new ArrayList<>();
         try {
             Conexao con = new Conexao();
-            ResultSet pagina = con.consultar(" SELECT TIMAGEM FROM ITEM WHERE IPAGINA = " +idPagina);
-            if(pagina == null)
+            Statement stmt = con.getCon().createStatement();
+            ResultSet catalogo = con.consultar(" SELECT TIMAGEM FROM ITEM WHERE ICATALOGO = " + idCatalogo, stmt);
+            if(catalogo == null)
                 throw new EmptyStackException();
             ArrayList<String> imagens64 = new ArrayList<String>();
-            pagina.first();
-            while ( pagina.next() ) {
-                imagens64.add(pagina.getString("TIMAGEM"));
+            catalogo.first();
+            while ( catalogo.next() ) {
+                imagens64.add(catalogo.getString("TIMAGEM"));
             }
-            pagina.close();
+            catalogo.close();
             for (int i = 0; i < tabelaImagens.size(); i += 2) {
                 Imagem d = tabelaImagens.get(i);
 //                FileInputStream imageInFile = new FileInputStream(d.getImagem());
@@ -252,15 +294,14 @@ public class Controller {
     }
 
     public void actSalvar(ActionEvent actionEvent) {
-        Conexao con = new Conexao();
-        if(idPagina == 0) {
-            String sql = " INSERT INTO PAGINA (TNOME, TCADASTRO, TDETALHES) VALUES (\"";
-            sql += inNomeCatalogo.getText() + "\",\"";
-            sql += "";
-            inNomeCatalogo.getText();
+        if(tabelaImagens.size() > 0) {
+            Conexao con = new Conexao();
+            String sql = "UPDATE INTO CATALOGO (TNOME, TDETALHES) VALUES (\"";
+            sql += inNomeCatalogo.getText().toString() + "\",\"";
+            sql += taDetalhes.getText().toString();
+            sql += "\")";
             con.executar(sql);
         }
-        idPagina=0;
     }
 
     public void actEditar(ActionEvent actionEvent) {
