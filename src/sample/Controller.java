@@ -196,7 +196,7 @@ public class Controller {
         try {
             Conexao con = new Conexao();
             if (con.getCon() == null) {
-                criarDialogo(Alert.AlertType.ERROR, "Atenção", "Comunicado do Sistema", "Nâo foi possível conectar ao banco de dados");
+                criarDialogo(Alert.AlertType.ERROR, "Atenção", "Comunicado do Sistema", "Não foi possível abrir conecxão com o banco de dados");
                 return;
             }
 

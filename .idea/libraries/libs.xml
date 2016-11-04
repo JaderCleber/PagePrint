@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="jasperreports">
+  <library name="libs">
     <CLASSES>
       <root url="file://$PROJECT_DIR$/jasperreports" />
     </CLASSES>

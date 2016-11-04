@@ -19,10 +19,9 @@
 
 package sample.persistence;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import javafx.scene.control.Alert;
+
+import java.sql.*;
 import java.util.ArrayList;
 
 /**
@@ -36,9 +35,17 @@ public class Conexao {
             Class.forName("org.sqlite.JDBC");
             con = DriverManager.getConnection("jdbc:sqlite:pageprint.db");
         } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
+            //criarDialogo(Alert.AlertType.ERROR, "Atenção", "Comunicado do Sistema", "Nâo foi possível conectar ao banco de dados");
+            //return;
         }
+    }
+
+    private void criarDialogo(Alert.AlertType tipo, String titulo, String cabecalho, String mensagem){
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titulo);
+        alert.setHeaderText(cabecalho);
+        alert.setContentText(mensagem);
+        alert.showAndWait();
     }
 
 //    public void tabelaItem(){

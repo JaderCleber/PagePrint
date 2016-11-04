@@ -5,7 +5,7 @@
       <element id="archive" name="PagePrint.jar">
         <element id="module-output" name="PagePrint" />
       </element>
-      <element id="library" level="project" name="jasperreports" />
+      <element id="library" level="project" name="libs" />
     </root>
   </artifact>
 </component>
