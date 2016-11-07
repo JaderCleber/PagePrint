@@ -36,19 +36,19 @@ import sample.controller.Base64;
 import sample.model.Catalogo;
 import sample.model.Imagem;
 import sample.model.ImagemJson;
-import sample.persistence.Conexao;
 import sun.misc.BASE64Decoder;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.channels.FileChannel;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.text.Format;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 public class Controller {
     @FXML
@@ -75,6 +75,7 @@ public class Controller {
     private File ultimoArquivo = null;
     private int idCatalogo = 0;
     private SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+    private Connection con;
 
     @FXML
     void initialize() {
@@ -90,6 +91,7 @@ public class Controller {
         inDataFinal.setEditable(false);
         inDataInicial.setValue(LocalDate.parse(f.format(new Date(System.currentTimeMillis()-(86400000*7)))));
         inDataFinal.setValue(LocalDate.parse(f.format(new Date(System.currentTimeMillis()))));
+        openCon();
     }
 
     public void actRemover(ActionEvent actionEvent) {
@@ -135,7 +137,7 @@ public class Controller {
     }
 
     public void actAdicionar(ActionEvent actionEvent) {
-        fileChooser.setTitle("Selecione a imagem da assinatura");
+        fileChooser.setTitle("Selecione a imagem");
         if (ultimoArquivo != null)
             fileChooser.setInitialDirectory(ultimoArquivo);
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JPG", "*.jpg"));
@@ -194,8 +196,7 @@ public class Controller {
 
     private void atualizarBanco(Imagem imagem, String acao) {
         try {
-            Conexao con = new Conexao();
-            if (con.getCon() == null) {
+            if (con == null) {
                 criarDialogo(Alert.AlertType.ERROR, "Atenção", "Comunicado do Sistema", "Não foi possível abrir conecxão com o banco de dados");
                 return;
             }
@@ -204,6 +205,7 @@ public class Controller {
 //            if (!limpeza)
 //                throw new EmptyStackException();
             String sql = "";
+            Statement stmt = null;
             switch (acao){
                 case "inserir":
                     FileInputStream imageInFile = new FileInputStream(imagem.getImagem());
@@ -223,18 +225,33 @@ public class Controller {
                         criarCatalogo();
                     sql += idCatalogo;
                     sql += ");";
-                    con.executar(sql);
+
+                    con.setAutoCommit(false);
+                    stmt = con.createStatement();
+                    stmt.executeUpdate(sql);
+                    con.commit();
+//                    con.executar(sql);
                     break;
                 case "deletar":
-                    sql = "DELETE FROM ITEM WHERE IORDEM = "+ imagem.getId();
+                    sql = "DELETE FROM ITEM WHERE ID = "+ imagem.getId();
                     sql += " AND ICATALOGO = " + idCatalogo;
-                    con.executar(sql);
+
+                    con.setAutoCommit(false);
+                    stmt = con.createStatement();
+                    stmt.executeUpdate(sql);
+                    con.commit();
+//                    con.executar(sql);
                     break;
                 default:
                     sql = "UPDATE ITEM SET TDESCRICAO = \"" + imagem.getDescricao() + "\"";
                     sql += " WHERE IORDEM = " + imagem.getId();
                     sql += " AND ICATALOGO = " + idCatalogo;
-                    con.executar(sql);
+
+                    con.setAutoCommit(false);
+                    stmt = con.createStatement();
+                    stmt.executeUpdate(sql);
+                    con.commit();
+//                    con.executar(sql);
                     break;
             }
 
@@ -242,13 +259,14 @@ public class Controller {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
     private void criarCatalogo() {
         try {
-            Conexao con = new Conexao();
-            if (con.getCon() == null) {
+            if (con == null) {
                 criarDialogo(Alert.AlertType.ERROR, "Atenção", "Comunicado do Sistema", "Não foi possível conectar ao banco de dados");
                 return;
             }
@@ -262,9 +280,8 @@ public class Controller {
             sql = "INSERT INTO CATALOGO (ID, TNOME, TCADASTRO, TDETALHES) VALUES (NULL, '"
                     + (inNomeCatalogo.getText().toString().equals("")?"":inNomeCatalogo.getText())+"', '"
                     + dataCadastro + "', '')";
-            idCatalogo = con.novoCatalogo(sql, dataCadastro);
+            idCatalogo = novoCatalogo(sql, dataCadastro);
             lbCodigo.setText("Catálogo Aberto: " + idCatalogo);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -273,8 +290,7 @@ public class Controller {
     public String toJSON() {
         ArrayList<ImagemJson> arrayJsons = new ArrayList<>();
         try {
-            Conexao con = new Conexao();
-            Statement stmt = con.getCon().createStatement();
+            Statement stmt = con.createStatement();
             ResultSet catalogo = stmt.executeQuery(" SELECT TIMAGEM FROM ITEM WHERE ICATALOGO = " + idCatalogo);
 
             if( catalogo.next() ) {
@@ -312,15 +328,23 @@ public class Controller {
             return;
         }
         if(tabelaImagens.size() > 0) {
-            Conexao con = new Conexao();
             String sql = "UPDATE CATALOGO SET TNOME = \"";
             sql += inNomeCatalogo.getText().toString() + "\", TDETALHES = \"";
             sql += taDetalhes.getText().toString();
             sql += "\" WHERE ID = ";
             sql += idCatalogo;
-            con.executar(sql);
-            limparPrincipal();
-            limparBusca();
+
+            try {
+                con.setAutoCommit(false);
+                Statement stmt = con.createStatement();
+                stmt.executeUpdate(sql);
+                con.commit();
+//            con.executar(sql);
+                limparPrincipal();
+                limparBusca();
+            }catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -342,8 +366,7 @@ public class Controller {
         taDetalhes.setText(tabelaBusca.get(index).getDetalhes());
         lbCodigo.setText("Em Edição: " + idCatalogo);
         try{
-            Conexao con = new Conexao();
-            Statement stmt = con.getCon().createStatement();
+            Statement stmt = con.createStatement();
             String sql = " SELECT ID, TCAMINHO, TDESCRICAO, TIMAGEM FROM ITEM WHERE ICATALOGO = " + idCatalogo;
 
             ResultSet itens = stmt.executeQuery(sql);
@@ -390,8 +413,7 @@ public class Controller {
         }
         idCatalogo = Integer.parseInt(tabelaBusca.get(index).getId());
         try{
-            Conexao con = new Conexao();
-            Statement stmt = con.getCon().createStatement();
+            Statement stmt = con.createStatement();
             String sql = " SELECT ID, TCAMINHO, TDESCRICAO FROM ITEM WHERE ICATALOGO = " + idCatalogo;
 
             ResultSet itens = stmt.executeQuery(sql);
@@ -423,13 +445,24 @@ public class Controller {
                 criarDialogo(Alert.AlertType.WARNING, "Atenção", "Comunicado do Sistema", "Selecione uma linha da lista para efetuar a operação");
                 return;
             }
-            Conexao con = new Conexao();
             String sql = " DELETE FROM ITEM WHERE ICATALOGO = " + selecionado + ";";
             sql += " DELETE FROM CATALOGO WHERE ID = " + selecionado + ";";
-            if(!con.executar(sql)) {
-                criarDialogo(Alert.AlertType.ERROR, "Atenção", "Comunicado do Sistema", "Não foi possível excluir o Catálogo");
-                return;
+
+            try {
+                con.setAutoCommit(false);
+                Statement stmt = con.createStatement();
+                stmt.executeUpdate(sql);
+                con.commit();
+//            con.executar(sql);
+                limparPrincipal();
+                limparBusca();
+            }catch (SQLException e) {
+                e.printStackTrace();
             }
+//            if(!con.executar(sql)) {
+//                criarDialogo(Alert.AlertType.ERROR, "Atenção", "Comunicado do Sistema", "Não foi possível excluir o Catálogo");
+//                return;
+//            }
             tabelaBusca.remove(index);
             carregarPesquisa();
         }catch (Exception e){
@@ -440,8 +473,7 @@ public class Controller {
     public void actBuscar(ActionEvent actionEvent) {
         limparPrincipal();
         try {
-            Conexao con = new Conexao();
-            Statement stmt = con.getCon().createStatement();
+            Statement stmt = con.createStatement();
             String sql = " SELECT * FROM CATALOGO WHERE TNOME LIKE '%"
                     + inPesquisaNome.getText().toString() + "%' and strftime('%Y-%m-%d', TCADASTRO) " +
                     " BETWEEN strftime('%Y-%m-%d', '" + inDataInicial.getValue()+ "') "
@@ -463,7 +495,6 @@ public class Controller {
                 }while(catalogos.next());
                 carregarPesquisa();
                 stmt.close();
-                con.getCon().close();
             } else
                 criarDialogo(Alert.AlertType.INFORMATION, "Atenção", "Comunicado do Banco", "Nenhum resultado foi encontrado");
         }catch (Exception e){
@@ -495,5 +526,36 @@ public class Controller {
         idCatalogo = 0;
         inNomeCatalogo.setText("");
         taDetalhes.setText("");
+    }
+
+    private void openCon(){
+        try {
+            Class.forName("org.sqlite.JDBC");
+            con = DriverManager.getConnection("jdbc:sqlite:pageprint.db");
+        } catch (Exception e) {
+            criarDialogo(Alert.AlertType.ERROR, "Atenção", "Comunicado do Sistema", "Nâo foi possível conectar ao banco de dados");
+            //return;
+        }
+    }
+
+    public int novoCatalogo(String sql, String dataCadastro) {
+        Statement stmt = null;
+        try {
+            con.setAutoCommit(false);
+            stmt = con.createStatement();
+            stmt.executeUpdate(sql);
+            con.commit();
+
+            ResultSet idGerado = stmt.executeQuery(" SELECT ID FROM CATALOGO WHERE TCADASTRO = '" +dataCadastro + "'");
+            int resultado = 0;
+            while(idGerado.next()){
+                resultado = idGerado.getInt("ID");
+            }
+
+            stmt.close();
+            return resultado;
+        } catch (Exception e) {
+            return 0;
+        }
     }
 }

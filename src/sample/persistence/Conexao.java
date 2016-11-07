@@ -31,13 +31,8 @@ public class Conexao {
     private Connection con = null;
 
     public Conexao() {
-        try {
-            Class.forName("org.sqlite.JDBC");
-            con = DriverManager.getConnection("jdbc:sqlite:pageprint.db");
-        } catch (Exception e) {
-            //criarDialogo(Alert.AlertType.ERROR, "Atenção", "Comunicado do Sistema", "Nâo foi possível conectar ao banco de dados");
-            //return;
-        }
+        if(con == null)
+            openCon();
     }
 
     private void criarDialogo(Alert.AlertType tipo, String titulo, String cabecalho, String mensagem){
@@ -92,25 +87,29 @@ public class Conexao {
 //        }
 //    }
 
-    public boolean executar(String sql) {
-        Statement stmt = null;
-        try {
-//            Class.forName("org.sqlite.JDBC");
-            con.setAutoCommit(false);
-
-            stmt = con.createStatement();
-            stmt.executeUpdate(sql);
-
-            stmt.close();
-            con.commit();
-            con.close();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
+//    public boolean executar(String sql) {
+//        if(con == null)
+//          openCon();
+//        Statement stmt = null;
+//        try {
+////            Class.forName("org.sqlite.JDBC");
+//            con.setAutoCommit(false);
+//
+//            stmt = con.createStatement();
+//            stmt.executeUpdate(sql);
+//
+//            con.commit();
+//            stmt.close();
+//            con.close();
+//            return true;
+//        } catch (Exception e) {
+//            return false;
+//        }
+//    }
 
     public Connection getCon() {
+        if(con == null)
+            openCon();
         return con;
     }
 
@@ -119,6 +118,8 @@ public class Conexao {
     }
 
     public int novoCatalogo(String sql, String dataCadastro) {
+        if(con == null)
+            openCon();
         Statement stmt = null;
         try {
 //            Class.forName("org.sqlite.JDBC");
@@ -135,10 +136,20 @@ public class Conexao {
             }
 
             stmt.close();
-            con.close();
+//            con.close();
             return resultado;
         } catch (Exception e) {
             return 0;
+        }
+    }
+
+    private void openCon(){
+        try {
+            Class.forName("org.sqlite.JDBC");
+            con = DriverManager.getConnection("jdbc:sqlite:pageprint.db");
+        } catch (Exception e) {
+            criarDialogo(Alert.AlertType.ERROR, "Atenção", "Comunicado do Sistema", "Nâo foi possível conectar ao banco de dados");
+            //return;
         }
     }
 }
