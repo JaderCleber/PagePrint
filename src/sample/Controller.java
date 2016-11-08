@@ -69,7 +69,7 @@ public class Controller {
     private ArrayList<Imagem> tabelaImagens = new ArrayList<>();
     private ArrayList<Catalogo> tabelaBusca = new ArrayList<>();
     private Collection<Imagem> imagemList = new ArrayList<Imagem>();
-    private int id = 0;
+//    private int id = 0;
     private String clicado = "";
     private FileChooser fileChooser = new FileChooser();
     private File ultimoArquivo = null;
@@ -146,11 +146,12 @@ public class Controller {
         List<File> files = fileChooser.showOpenMultipleDialog(null);
         if (files.size() > 0) {
             try {
-                for (File fileImg : files) {
+                for (int i=0;i<files.size();i++) {
+                    File fileImg = files.get(i);
                     ultimoArquivo = new File(fileImg.getParent());
                     FileInputStream stream = new FileInputStream(fileImg.getAbsolutePath());
                     String caminho = fileImg.getAbsolutePath();
-                    FileOutputStream output = new FileOutputStream("imagens/" + id + ".jpg");
+                    FileOutputStream output = new FileOutputStream("imagens/" + i + ".jpg");
                     FileChannel o = stream.getChannel();
                     FileChannel d = output.getChannel();
                     o.transferTo(0, o.size(), d);
@@ -170,7 +171,7 @@ public class Controller {
 
                     Imagem imagem = new Imagem();
                     imagem.setImagem(fileImg);
-                    imagem.setId(String.valueOf(id++));
+//                    imagem.setId(String.valueOf(id++));
                     imagem.setCaminho(caminho);
                     imagem.setDescricao("");
                     imagemList.add(imagem);
@@ -211,16 +212,19 @@ public class Controller {
                     FileInputStream imageInFile = new FileInputStream(imagem.getImagem());
                     byte[] imageData = new byte[(int) imagem.getImagem().length()];
                     imageInFile.read(imageData);
-                    sql = "INSERT INTO ITEM (TIMAGEM, TCAMINHO, TDESCRICAO,IORDEM, ICATALOGO) " +
+                    sql = "INSERT INTO ITEM (";
+//                    sql += (id>0)?"ID,":"";
+                    sql += "TIMAGEM, TCAMINHO, TDESCRICAO, ICATALOGO) " +
                             " VALUES(\"";
+//                    sql += (id>0)?id+",\"":"\"";
                     sql += Base64.encodeBytes(imageData);
                     sql += "\",\"";
                     sql += imagem.getCaminho();
                     sql += "\",\"";
                     sql += imagem.getDescricao().replace("\"", "'");
                     sql += "\",";
-                    sql += imagem.getId();
-                    sql += ",";
+//                    sql += ++id;
+//                    sql += ",";
                     if(idCatalogo == 0)
                         criarCatalogo();
                     sql += idCatalogo;
@@ -244,7 +248,7 @@ public class Controller {
                     break;
                 default:
                     sql = "UPDATE ITEM SET TDESCRICAO = \"" + imagem.getDescricao() + "\"";
-                    sql += " WHERE IORDEM = " + imagem.getId();
+                    sql += " WHERE ID = " + imagem.getId();
                     sql += " AND ICATALOGO = " + idCatalogo;
 
                     con.setAutoCommit(false);
@@ -394,6 +398,7 @@ public class Controller {
                     i.setImagem(aux);
                     aux.delete();
                     tabelaImagens.add(i);
+//                    id = Integer.parseInt(i.getId());
                 } while (itens.next());
                 tab.getSelectionModel().select(0);
                 carregarTabela();
