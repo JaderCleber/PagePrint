@@ -1,18 +1,18 @@
 /**
  * Copyright 2016 Jader Cleber
- *
+ * <p>
  * This file is part of PagePrint.
- *
+ * <p>
  * PagePrint is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * PagePrint is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -54,11 +54,11 @@ public class Controller {
     @FXML
     private TableView tbImagens, tbPesquisa;
     @FXML
-    private TextArea taDescricao, taDetalhes;
+    private TextArea taDescricao, taDetalhes, taNotasExtras;
     @FXML
     private TableColumn tcId, tcImagem, tcDescricao, tcIdCatalogo, tcNome, tcDetalhes, tcData;
     @FXML
-    private TextField inNomeCatalogo, inPesquisaNome;
+    private TextField inNomeCatalogo, inPesquisaNome, inNomeEmpresa, inEndereco;
     @FXML
     private DatePicker inDataInicial, inDataFinal;
     @FXML
@@ -69,7 +69,7 @@ public class Controller {
     private ArrayList<Imagem> tabelaImagens = new ArrayList<>();
     private ArrayList<Catalogo> tabelaBusca = new ArrayList<>();
     private Collection<Imagem> imagemList = new ArrayList<Imagem>();
-//    private int id = 0;
+    //    private int id = 0;
     private String clicado = "";
     private FileChooser fileChooser = new FileChooser();
     private File ultimoArquivo = null;
@@ -87,9 +87,10 @@ public class Controller {
             }
         });
         taDescricao.setWrapText(true);
+        taDetalhes.setWrapText(true);
         inDataInicial.setEditable(false);
         inDataFinal.setEditable(false);
-        inDataInicial.setValue(LocalDate.parse(f.format(new Date(System.currentTimeMillis()-(86400000*7)))));
+        inDataInicial.setValue(LocalDate.parse(f.format(new Date(System.currentTimeMillis() - (86400000 * 7)))));
         inDataFinal.setValue(LocalDate.parse(f.format(new Date(System.currentTimeMillis()))));
         openCon();
     }
@@ -146,7 +147,7 @@ public class Controller {
         List<File> files = fileChooser.showOpenMultipleDialog(null);
         if (files.size() > 0) {
             try {
-                for (int i=0;i<files.size();i++) {
+                for (int i = 0; i < files.size(); i++) {
                     File fileImg = files.get(i);
                     ultimoArquivo = new File(fileImg.getParent());
                     FileInputStream stream = new FileInputStream(fileImg.getAbsolutePath());
@@ -207,7 +208,7 @@ public class Controller {
 //                throw new EmptyStackException();
             String sql = "";
             Statement stmt = null;
-            switch (acao){
+            switch (acao) {
                 case "inserir":
                     FileInputStream imageInFile = new FileInputStream(imagem.getImagem());
                     byte[] imageData = new byte[(int) imagem.getImagem().length()];
@@ -225,7 +226,7 @@ public class Controller {
                     sql += "\",";
 //                    sql += ++id;
 //                    sql += ",";
-                    if(idCatalogo == 0)
+                    if (idCatalogo == 0)
                         criarCatalogo();
                     sql += idCatalogo;
                     sql += ");";
@@ -234,10 +235,17 @@ public class Controller {
                     stmt = con.createStatement();
                     stmt.executeUpdate(sql);
                     con.commit();
+                    ResultSet ultimoId = stmt.executeQuery(" SELECT MAX(ID) MAX FROM ITEM WHERE ICATALOGO = " + idCatalogo);
+                    if (ultimoId.next()) {
+                        do {
+                            imagem.setId(ultimoId.getString("MAX"));
+                        } while (ultimoId.next());
+                    }
+                    tabelaImagens.set(tabelaImagens.size() - 1, imagem);
 //                    con.executar(sql);
                     break;
                 case "deletar":
-                    sql = "DELETE FROM ITEM WHERE ID = "+ imagem.getId();
+                    sql = "DELETE FROM ITEM WHERE ID = " + imagem.getId();
                     sql += " AND ICATALOGO = " + idCatalogo;
 
                     con.setAutoCommit(false);
@@ -282,7 +290,7 @@ public class Controller {
             String sql = "";
             String dataCadastro = format.format(new Date());
             sql = "INSERT INTO CATALOGO (ID, TNOME, TCADASTRO, TDETALHES) VALUES (NULL, '"
-                    + (inNomeCatalogo.getText().toString().equals("")?"":inNomeCatalogo.getText())+"', '"
+                    + (inNomeCatalogo.getText().toString().equals("") ? "" : inNomeCatalogo.getText()) + "', '"
                     + dataCadastro + "', '')";
             idCatalogo = novoCatalogo(sql, dataCadastro);
             lbCodigo.setText("Catálogo Aberto: " + idCatalogo);
@@ -297,11 +305,11 @@ public class Controller {
             Statement stmt = con.createStatement();
             ResultSet catalogo = stmt.executeQuery(" SELECT TIMAGEM FROM ITEM WHERE ICATALOGO = " + idCatalogo);
 
-            if( catalogo.next() ) {
+            if (catalogo.next()) {
                 ArrayList<String> imagens64 = new ArrayList<String>();
                 do {
                     imagens64.add(catalogo.getString("TIMAGEM"));
-                }while (catalogo.next());
+                } while (catalogo.next());
                 catalogo.close();
 
                 for (int i = 0; i < tabelaImagens.size(); i += 2) {
@@ -310,9 +318,13 @@ public class Controller {
                     imagemJson.setImagem(imagens64.get(i));
                     imagemJson.setDescricao(d.getDescricao());
                     arrayJsons.add(imagemJson);
+                    //
+                    imagemJson.setEmpresa(inNomeEmpresa.getText().toString());
+                    imagemJson.setEndereco(inEndereco.getText().toString());
+                    imagemJson.setExtras(taNotasExtras.getText().toString());
                     if (tabelaImagens.get(i + 1) != null) {
                         d = tabelaImagens.get(i + 1);
-                        imagemJson.setImagem1(imagens64.get(i+1));
+                        imagemJson.setImagem1(imagens64.get(i + 1));
                         imagemJson.setDescricao1(d.getDescricao());
                         arrayJsons.set(arrayJsons.size() - 1, imagemJson);
                     }
@@ -323,15 +335,15 @@ public class Controller {
 
         }
         Gson gson = new Gson();
-            return gson.toJson(arrayJsons);
+        return gson.toJson(arrayJsons);
     }
 
     public void actSalvar(ActionEvent actionEvent) {
-        if(inNomeCatalogo.getText().toString().equals("")){
+        if (inNomeCatalogo.getText().toString().equals("")) {
             inNomeCatalogo.requestFocus();
             return;
         }
-        if(tabelaImagens.size() > 0) {
+        if (tabelaImagens.size() > 0) {
             String sql = "UPDATE CATALOGO SET TNOME = \"";
             sql += inNomeCatalogo.getText().toString() + "\", TDETALHES = \"";
             sql += taDetalhes.getText().toString();
@@ -346,7 +358,7 @@ public class Controller {
 //            con.executar(sql);
                 limparPrincipal();
                 limparBusca();
-            }catch (SQLException e) {
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
@@ -361,7 +373,7 @@ public class Controller {
     public void actEditar(ActionEvent actionEvent) {
         limparPrincipal();
         int index = tbPesquisa.getSelectionModel().getSelectedIndex();
-        if(index == -1) {
+        if (index == -1) {
             criarDialogo(Alert.AlertType.WARNING, "Atenção", "Comunicado do Sistema", "Selecione um item na lista para Editar");
             return;
         }
@@ -369,7 +381,7 @@ public class Controller {
         inNomeCatalogo.setText(tabelaBusca.get(index).getNome());
         taDetalhes.setText(tabelaBusca.get(index).getDetalhes());
         lbCodigo.setText("Em Edição: " + idCatalogo);
-        try{
+        try {
             Statement stmt = con.createStatement();
             String sql = " SELECT ID, TCAMINHO, TDESCRICAO, TIMAGEM FROM ITEM WHERE ICATALOGO = " + idCatalogo;
 
@@ -403,8 +415,8 @@ public class Controller {
                 tab.getSelectionModel().select(0);
                 carregarTabela();
             } else
-                criarDialogo(Alert.AlertType.INFORMATION,"Atenção", "Comunicado do Banco", "Nenhum item foi encontrado para o Catálogo");
-        }catch (Exception e){
+                criarDialogo(Alert.AlertType.INFORMATION, "Atenção", "Comunicado do Banco", "Nenhum item foi encontrado para o Catálogo");
+        } catch (Exception e) {
 
         }
     }
@@ -412,12 +424,12 @@ public class Controller {
     public void actReimprimir(ActionEvent actionEvent) {
         limparPrincipal();
         int index = tbPesquisa.getSelectionModel().getSelectedIndex();
-        if(index == -1) {
+        if (index == -1) {
             criarDialogo(Alert.AlertType.WARNING, "Atenção", "Comunicado do Sistema", "Selecione um item na lista para Editar");
             return;
         }
         idCatalogo = Integer.parseInt(tabelaBusca.get(index).getId());
-        try{
+        try {
             Statement stmt = con.createStatement();
             String sql = " SELECT ID, TCAMINHO, TDESCRICAO FROM ITEM WHERE ICATALOGO = " + idCatalogo;
 
@@ -434,8 +446,8 @@ public class Controller {
                 actImprimir(null);
 //                carregarTabela();
             } else
-                criarDialogo(Alert.AlertType.INFORMATION,"Atenção", "Comunicado do Banco", "Nenhum item foi encontrado para o Catálogo");
-        }catch (Exception e){
+                criarDialogo(Alert.AlertType.INFORMATION, "Atenção", "Comunicado do Banco", "Nenhum item foi encontrado para o Catálogo");
+        } catch (Exception e) {
 
         }
 
@@ -445,8 +457,8 @@ public class Controller {
         limparPrincipal();
         int index = tbPesquisa.getSelectionModel().getSelectedIndex();
         String selecionado = tabelaBusca.get(index).getId();
-        try{
-            if(selecionado.equals("")) {
+        try {
+            if (selecionado.equals("")) {
                 criarDialogo(Alert.AlertType.WARNING, "Atenção", "Comunicado do Sistema", "Selecione uma linha da lista para efetuar a operação");
                 return;
             }
@@ -461,7 +473,7 @@ public class Controller {
 //            con.executar(sql);
                 limparPrincipal();
                 limparBusca();
-            }catch (SQLException e) {
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
 //            if(!con.executar(sql)) {
@@ -470,7 +482,7 @@ public class Controller {
 //            }
             tabelaBusca.remove(index);
             carregarPesquisa();
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -481,28 +493,28 @@ public class Controller {
             Statement stmt = con.createStatement();
             String sql = " SELECT * FROM CATALOGO WHERE TNOME LIKE '%"
                     + inPesquisaNome.getText().toString() + "%' and strftime('%Y-%m-%d', TCADASTRO) " +
-                    " BETWEEN strftime('%Y-%m-%d', '" + inDataInicial.getValue()+ "') "
+                    " BETWEEN strftime('%Y-%m-%d', '" + inDataInicial.getValue() + "') "
                     + " AND strftime('%Y-%m-%d', '"
                     + inDataFinal.getValue() + "')";
             ResultSet catalogos = stmt.executeQuery(sql);
             tabelaBusca = new ArrayList<>();
             tbPesquisa.getItems().clear();
-            if(catalogos.next()) {
+            if (catalogos.next()) {
                 do {
                     Catalogo c = new Catalogo();
                     String[] cadastro = catalogos.getString("TCADASTRO").split(" ");
                     String[] data = cadastro[0].split("-");
-                    c.setCadastro(data[2]+ "/" + data[1]+ "/" + data[0] + " " + cadastro[1]);
+                    c.setCadastro(data[2] + "/" + data[1] + "/" + data[0] + " " + cadastro[1]);
                     c.setDetalhes(catalogos.getString("TDETALHES"));
                     c.setNome(catalogos.getString("TNOME"));
                     c.setId(catalogos.getString("ID"));
                     tabelaBusca.add(c);
-                }while(catalogos.next());
+                } while (catalogos.next());
                 carregarPesquisa();
                 stmt.close();
             } else
                 criarDialogo(Alert.AlertType.INFORMATION, "Atenção", "Comunicado do Banco", "Nenhum resultado foi encontrado");
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -516,7 +528,7 @@ public class Controller {
         tbPesquisa.setItems(FXCollections.observableArrayList(tabelaBusca));
     }
 
-    private void criarDialogo(Alert.AlertType tipo, String titulo, String cabecalho, String mensagem){
+    private void criarDialogo(Alert.AlertType tipo, String titulo, String cabecalho, String mensagem) {
         Alert alert = new Alert(tipo);
         alert.setTitle(titulo);
         alert.setHeaderText(cabecalho);
@@ -524,7 +536,7 @@ public class Controller {
         alert.showAndWait();
     }
 
-    private void limparPrincipal(){
+    private void limparPrincipal() {
         tbImagens.getItems().clear();
         tabelaImagens = new ArrayList<>();
         lbCodigo.setText("");
@@ -533,13 +545,29 @@ public class Controller {
         taDetalhes.setText("");
     }
 
-    private void openCon(){
+    private void openCon() {
         try {
             Class.forName("org.sqlite.JDBC");
             con = DriverManager.getConnection("jdbc:sqlite:pageprint.db");
+            getConfiguracoes();
         } catch (Exception e) {
             criarDialogo(Alert.AlertType.ERROR, "Atenção", "Comunicado do Sistema", "Nâo foi possível conectar ao banco de dados");
             //return;
+        }
+    }
+
+    private void getConfiguracoes() {
+        Statement stmt = null;
+        try {
+            stmt = con.createStatement();
+            ResultSet configuracoes = stmt.executeQuery(" SELECT * FROM CONFIGURACOES WHERE ID = 1");
+            while (configuracoes.next()) {
+                inNomeEmpresa.setText(configuracoes.getString("TEMPRESA"));
+                inEndereco.setText(configuracoes.getString("TENDERECO"));
+                taNotasExtras.setText(configuracoes.getString("TEXTRAS"));
+            }
+            stmt.close();
+        } catch (Exception e) {
         }
     }
 
@@ -551,9 +579,9 @@ public class Controller {
             stmt.executeUpdate(sql);
             con.commit();
 
-            ResultSet idGerado = stmt.executeQuery(" SELECT ID FROM CATALOGO WHERE TCADASTRO = '" +dataCadastro + "'");
+            ResultSet idGerado = stmt.executeQuery(" SELECT ID FROM CATALOGO WHERE TCADASTRO = '" + dataCadastro + "'");
             int resultado = 0;
-            while(idGerado.next()){
+            while (idGerado.next()) {
                 resultado = idGerado.getInt("ID");
             }
 
@@ -561,6 +589,22 @@ public class Controller {
             return resultado;
         } catch (Exception e) {
             return 0;
+        }
+    }
+
+    public void actSalvarConfiguracoes(ActionEvent event){
+        try {
+            String sql = "UPDATE CONFIGURACOES SET TEMPRESA = \"" + inNomeEmpresa.getText().toString() + "\"";
+            sql += ", TENDERECO = \"" + inEndereco.getText().toString() + "\"";
+            sql += ", TEXTRAS = \"" + taNotasExtras.getText().toString() + "\"";
+            sql += " WHERE ID = 1";
+
+            con.setAutoCommit(false);
+            Statement stmt = con.createStatement();
+            stmt.executeUpdate(sql);
+            con.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

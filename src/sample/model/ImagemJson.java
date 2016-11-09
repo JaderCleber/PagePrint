@@ -24,6 +24,33 @@ public class ImagemJson {
     private String descricao;
     private String imagem1;
     private String descricao1;
+    private String empresa;
+    private String endereco;
+    private String extras;
+
+    public String getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(String empresa) {
+        this.empresa = empresa;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }
+
+    public String getExtras() {
+        return extras;
+    }
+
+    public void setExtras(String extras) {
+        this.extras = extras;
+    }
 
     public String getImagem1() {
         return imagem1;

@@ -15,7 +15,7 @@
    </rowConstraints>
    <children>
       <AnchorPane prefHeight="398.0" prefWidth="846.0" />
-      <TabPane prefHeight="435.0" prefWidth="846.0" tabClosingPolicy="UNAVAILABLE" fx:id="tab">
+      <TabPane fx:id="tab" prefHeight="435.0" prefWidth="846.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="Produção       ">
             <content>
@@ -132,7 +132,7 @@
                                  <children>
                                     <TableView fx:id="tbPesquisa" prefHeight="322.0" prefWidth="243.0" HBox.hgrow="ALWAYS">
                                        <columns>
-                                          <TableColumn fx:id="tcIdCatalogo" prefWidth="50.0" text="Código"/>
+                                          <TableColumn fx:id="tcIdCatalogo" prefWidth="50.0" text="Código" />
                                           <TableColumn fx:id="tcNome" prefWidth="200" text="Nome" />
                                           <TableColumn fx:id="tcData" prefWidth="150" text="Data" />
                                           <TableColumn fx:id="tcDetalhes" prefWidth="400" text="Detalhes" />
@@ -167,6 +167,40 @@
                   </AnchorPane>
             </content>
           </Tab>
+            <Tab text="Configurações">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="307.0" prefWidth="500.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT">
+                                 <children>
+                                    <VBox prefHeight="158.0" prefWidth="287.0">
+                                       <children>
+                                          <Label prefHeight="17.0" prefWidth="151.0" text="Nome da Empresa" />
+                                          <TextField fx:id="inNomeEmpresa" />
+                                          <Label prefHeight="17.0" prefWidth="151.0" text="Endereço" />
+                                          <TextField fx:id="inEndereco" />
+                                          <Label prefHeight="17.0" prefWidth="250.0" text="Notas Extras" />
+                                          <TextArea fx:id="taNotasExtras" prefHeight="79.0" prefWidth="287.0" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" fillHeight="false" maxWidth="120.0">
+                                 <children>
+                                    <Button mnemonicParsing="false" onAction="#actSalvarConfiguracoes" prefHeight="34.0" prefWidth="120.0" text="Salvar" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets left="80.0" top="20.0" />
+                                 </VBox.margin>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
         </tabs>
       </TabPane>
    </children>
